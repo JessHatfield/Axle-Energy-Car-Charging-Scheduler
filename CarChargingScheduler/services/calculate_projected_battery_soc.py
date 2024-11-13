@@ -3,6 +3,9 @@ from decimal import Decimal
 
 from django.db.models import QuerySet
 
+BATTERY_OVERRIDE_DURATION_MINS = 60
+BATTERY_OVERRIDE_CHARGE_GAINED = 0.1
+
 
 def calculate_override_component(charging_slots: QuerySet, override_applied_at: datetime.datetime) -> Decimal:
     """
@@ -18,7 +21,24 @@ def calculate_override_component(charging_slots: QuerySet, override_applied_at: 
 
     """
 
-    pass
+    for slot in charging_slots:
+
+        # If override starts within a given slot
+        if slot.end_datetime >= override_applied_at >= slot.start_datetime:
+            override_end = override_applied_at + datetime.timedelta(hours=1)
+
+            override_end = datetime.timestamp()
+            slot_end = slot.end_datetime.timestamp()
+
+            mins_of_extra_charging = (override_end - slot_end) * 60
+
+            extra_capacity = (BATTERY_OVERRIDE_CHARGE_GAINED / BATTERY_OVERRIDE_DURATION_MINS) * mins_of_extra_charging
+
+            return extra_capacity
+
+    # If we don't find any overlapping slots then we can return the full charge amount
+
+    return BATTERY_OVERRIDE_CHARGE_GAINED
 
 
 def calculate_projected_battery_soc(charging_schedule) -> Decimal:

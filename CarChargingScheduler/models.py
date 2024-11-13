@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 
 from django.contrib.auth.base_user import AbstractBaseUser
@@ -73,3 +74,17 @@ class ChargingSlot(AeModel):
                                                verbose_name='battery_level_gained',
                                                help_text='the percentage point increase in battery level gained via this '
                                                          'charging slot')
+
+    def clean(self):
+        # Check for overlapping time slots. A single Charging Schedule cannot not have overlapping slots
+        if self.start_time >= self.end_time:
+            raise ValidationError("Start time must be before end time.")
+
+        overlapping_slots = ChargingSlot.objects.filter(
+            start_time__lt=self.end_time,
+            end_time__gt=self.start_time,
+            charging_schedule=self.charging_schedule
+        )
+
+        if overlapping_slots.exists():
+            raise ValidationError("This time slot overlaps with an existing slot.")
