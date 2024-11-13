@@ -5,7 +5,7 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 
 from CarChargingScheduler.mixins import AeModel
-from CarChargingScheduler.services.calculate_projected_battery_soc import calculate_projected_battery_soc
+from CarChargingScheduler.services.battery_projection_calculator import calculate_projected_battery_soc
 
 
 class User(AeModel, AbstractBaseUser):

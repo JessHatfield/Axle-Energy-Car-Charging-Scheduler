@@ -6,7 +6,6 @@ from rest_framework.test import APIClient
 from CarChargingScheduler.models import User, Car, ChargingSlot, ChargingSchedule
 
 
-
 @pytest.fixture()
 def user():
     return User.objects.create(username='TestUser')
@@ -30,16 +29,12 @@ def charging_schedule(car):
 
 
 @pytest.fixture()
-def charging_slots(charging_schedule):
+def charging_slot(charging_schedule):
     charging_slot_1 = ChargingSlot.objects.create(charging_schedule=charging_schedule,
                                                   battery_level_gained=Decimal("0.1"),
                                                   start_datetime=datetime.strptime('01:00 - 01/01/2024',
-                                                                               '%H:%M - %d/%m/%Y'),
-                                                  end_datetime=datetime.strptime('02:00 - 01/01/2024', '%H:%M - %d/%m/%Y'))
-    charging_slot_2 = ChargingSlot.objects.create(charging_schedule=charging_schedule,
-                                                  battery_level_gained=Decimal("0.2"),
-                                                  start_datetime=datetime.strptime('05:00 - 01/01/2024',
-                                                                               '%H:%M - %d/%m/%Y'),
-                                                  end_datetime=datetime.strptime('07:00 - 01/01/2024', '%H:%M - %d/%m/%Y'))
+                                                                                   '%H:%M - %d/%m/%Y'),
+                                                  end_datetime=datetime.strptime('02:00 - 01/01/2024',
+                                                                                 '%H:%M - %d/%m/%Y'))
 
-    return charging_slot_1, charging_slot_2
+    return charging_slot_1

@@ -35,23 +35,30 @@ def calculate_override_component(charging_slots: QuerySet, override_applied_at: 
             charge_time_to_capacity_ratio = BATTERY_OVERRIDE_CHARGE_GAINED / BATTERY_OVERRIDE_DURATION_MINS
             extra_capacity = charge_time_to_capacity_ratio * mins_of_extra_charging
 
-            return round(extra_capacity,3)
+            return Decimal(f'{round(extra_capacity, 3)}')
 
     # If we don't find any overlapping slots then we can return the full charge amount
 
-    return BATTERY_OVERRIDE_CHARGE_GAINED
+    return Decimal(f'{BATTERY_OVERRIDE_CHARGE_GAINED}')
 
 
 def calculate_projected_battery_soc(charging_schedule) -> Decimal:
+
+    car_battery_level=charging_schedule.car.battery_level
+
     if charging_schedule.scheduled_paused:
-        return charging_schedule.car.battery_level
+        return car_battery_level
 
     if not charging_schedule.car.is_at_home:
-        return charging_schedule.car.battery_level
+        return car_battery_level
 
         # calculate charging slots
     extra_capacity = Decimal('0.00')
     for slot in charging_schedule.charging_slots.all():
         extra_capacity += slot.battery_level_gained
 
-    return charging_schedule.car.battery_level + extra_capacity
+    if charging_schedule.override_applied_at:
+        extra_capacity += calculate_override_component(charging_slots=charging_schedule.charging_slots.all(),
+                                                       override_applied_at=charging_schedule.override_applied_at)
+
+    return car_battery_level + extra_capacity

@@ -3,15 +3,15 @@ from decimal import Decimal
 
 import pytest
 
-from CarChargingScheduler.models import ChargingSlot, ChargingSchedule
-from CarChargingScheduler.services.calculate_projected_battery_soc import calculate_override_component
+from CarChargingScheduler.models import ChargingSlot
+from CarChargingScheduler.services.battery_projection_calculator import calculate_override_component
 
 pytestmark = pytest.mark.django_db
 
 
 @pytest.mark.parametrize('slot_start, slot_end, override_applied_at,expected_battery_gain_from_override', [
-    ('05:00:00 - 02/01/2024 +0000', '06:00:00 - 02/01/2024 +0000', '07:00:00 - 02/01/2024 +0000', 0.1),  # No overlap
-    ('05:00:00 - 02/01/2024 +0000', '06:00:00 - 02/01/2024 +0000', '05:45:00 - 02/01/2024 +0000', 0.075)
+    ('05:00:00 - 02/01/2024 +0000', '06:00:00 - 02/01/2024 +0000', '07:00:00 - 02/01/2024 +0000', Decimal('0.1')),  # No overlap
+    ('05:00:00 - 02/01/2024 +0000', '06:00:00 - 02/01/2024 +0000', '05:45:00 - 02/01/2024 +0000', Decimal('0.075'))
     # Overlap of 15 mins with slot
 
 ])
@@ -29,3 +29,6 @@ def test_calculate_override_component(car, charging_schedule, slot_start, slot_e
                                                                                                      "%d/%m/%Y %z"))
 
     assert result == expected_battery_gain_from_override
+
+
+
