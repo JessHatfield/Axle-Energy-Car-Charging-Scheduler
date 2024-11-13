@@ -43,8 +43,7 @@ def calculate_override_component(charging_slots: QuerySet, override_applied_at: 
 
 
 def calculate_projected_battery_soc(charging_schedule) -> Decimal:
-
-    car_battery_level=charging_schedule.car.battery_level
+    car_battery_level = charging_schedule.car.battery_level
 
     if charging_schedule.scheduled_paused:
         return car_battery_level

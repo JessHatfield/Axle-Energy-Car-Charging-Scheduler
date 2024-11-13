@@ -74,5 +74,30 @@ def test_user_can_pause_schedule_and_see_new_battery_soc(api_client, car, chargi
 
 
 def test_user_sees_unchanged_battery_soc_when_car_not_at_home(api_client, car, charging_schedule, charging_slot):
+    # Mark car as not at home
+
+    url = reverse('car', kwargs={'car_ae_id': car.ae_id})
+    response = api_client.put(url, data={'is_at_home': False})
+
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert False == data['is_at_home']
+
+    # Retrieve Latest Charging Schedule
     url = reverse('charging_schedule', kwargs={'car_ae_id': car.ae_id})
     response = api_client.get(url)
+
+    data = response.json()
+    assert data['projected_battery_soc'] == 0.5
+
+    # Mark car at home
+
+    url = reverse('car', kwargs={'car_ae_id': car.ae_id})
+    response = api_client.put(url, data={'is_at_home': True})
+
+    # Retrieve Latest Charging Schedule. Battery SOC projection should now include our charge slot!
+    url = reverse('charging_schedule', kwargs={'car_ae_id': car.ae_id})
+    response = api_client.get(url)
+
+    data = response.json()
+    assert data['projected_battery_soc'] == 0.6

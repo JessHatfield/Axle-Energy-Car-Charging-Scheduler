@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from CarChargingScheduler.authentication import PreSharedKeyAuthentication
 
 from CarChargingScheduler.models import ChargingSlot, ChargingSchedule, Car
-from CarChargingScheduler.serializers import ChargingScheduleSerializer
+from CarChargingScheduler.serializers import ChargingScheduleSerializer, ChargingSlotSerializer, CarSerializer
 
 
 class ChargingScheduleView(generics.RetrieveAPIView):
@@ -71,15 +71,21 @@ class ChargingSlotView(generics.ListAPIView):
     queryset = ChargingSlot.objects.all()
     authentication_classes = [PreSharedKeyAuthentication]
     permission_classes = [IsAuthenticated]
+    serializer_class = ChargingSlotSerializer
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
 
-class CarView(generics.RetrieveAPIView):
+class CarView(generics.UpdateAPIView):
     queryset = Car.objects.all()
     authentication_classes = [PreSharedKeyAuthentication]
     permission_classes = [IsAuthenticated]
+    serializer_class = CarSerializer
+
+    def get_object(self):
+        car_ae_id = self.kwargs['car_ae_id']
+        return Car.objects.get(ae_id=car_ae_id)
 
     def put(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+        return self.update(request, *args, **kwargs)
