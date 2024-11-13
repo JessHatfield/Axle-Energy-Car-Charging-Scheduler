@@ -14,7 +14,7 @@ def user():
 
 @pytest.fixture()
 def car(user):
-    return Car.objects.create(user=user, )
+    return Car.objects.create(user=user, battery_level=Decimal('0.5'))
 
 
 @pytest.fixture()

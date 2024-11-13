@@ -26,7 +26,7 @@ def test_user_can_retrieve_state_of_charge(api_client, car, charging_schedule):
 
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
-    assert data['projected_battery_soc'] == '0.7'
+    assert data['projected_battery_soc'] == 0.6
 
 
 def test_user_can_apply_charge_override_and_see_new_battery_soc(api_client, car, charging_schedule, charging_slots):

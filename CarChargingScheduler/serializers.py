@@ -16,6 +16,8 @@ class ChargingSlotSerializer(serializers.ModelSerializer):
 
 
 class ChargingScheduleSerializer(serializers.ModelSerializer):
+    projected_battery_soc = serializers.SerializerMethodField()
+
     class Meta:
         model = ChargingSchedule
         fields = ['paused_until', 'projected_battery_soc']

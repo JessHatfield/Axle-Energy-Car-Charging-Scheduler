@@ -1,4 +1,6 @@
-from datetime import timezone
+from django.db.models import Sum
+from django.utils import timezone
+from decimal import Decimal
 
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
@@ -34,12 +36,21 @@ class ChargingSchedule(AeModel):
     car = models.ForeignKey(to=Car, verbose_name='Car', help_text='Car linked to Charging Schedule',
                             on_delete=models.CASCADE)
 
+    @property
     def scheduled_paused(self) -> bool:
-        if self.paused_until <= timezone.now():
+
+        # If it's not set it's not paused
+        if not self.paused_until:
             return False
 
-        return True
+        # If paused_until is in the future it's paused
+        elif self.paused_until <= timezone.now():
+            return True
 
+        # In all other cases it's not paused
+        return False
+
+    @property
     def projected_battery_soc(self):
         if self.scheduled_paused:
             return self.car.battery_level
@@ -48,8 +59,11 @@ class ChargingSchedule(AeModel):
             return self.car.battery_level
 
         # calculate charging slots
+        extra_capacity = Decimal('0.00')
+        for slot in self.charging_slots.all():
+            extra_capacity += slot.battery_level_gained
 
-        return
+        return self.car.battery_level + extra_capacity
 
 
 class ChargingSlot(AeModel):
