@@ -3,7 +3,18 @@ from django.db import models
 from CarChargingScheduler.mixins import AeModel
 
 
+class User(models.Model, AeModel):
+    username = models.CharField(
+        blank=True,
+        max_length=50,
+        verbose_name="Username",
+        help_text="Username for the user",
+    )
+
+
 class Car(models.Model, AeModel):
+    user = models.ForeignKey(to=User, verbose_name='User', help_text='User this car belongs to')
+
     battery_level = models.DecimalField(decimal_places=2, default=0.5, verbose_name='battery_level_percantage',
                                         help_text='the % capacity remaining in the battery')
 
