@@ -29,17 +29,72 @@ def test_user_can_retrieve_state_of_charge(api_client, car, charging_schedule):
     assert data['projected_battery_soc'] == 0.6
 
 
-def test_user_can_apply_charge_override_and_see_new_battery_soc(api_client, car, charging_schedule, charging_slots):
-    url = reverse('charging_schedule', kwargs={'ae_id': car.ae_id})
+@pytest.mark.parametrize('schedule_start,schedule_end,current_datetime,override_applied,battery_starting_level,'
+                         'expected_charge_level',
+                         [
+                             ('01:00 - 02/01/2024', '02:00 - 02/01/2024', '23:00 - 01/01/2024', True,
+                              Decimal('0.5'), Decimal('0.6'))
+                         ])
+def test_user_can_apply_charge_override_and_see_new_battery_soc(api_client, car, charging_schedule,
+                                                                schedule_start,
+                                                                schedule_end,
+                                                                current_datetime,
+                                                                override_applied,
+                                                                battery_starting_level,
+                                                                expected_charge_level):
+    """
+    We've got a charging scheduled with two slots
 
-    response = api_client.get(url)
+    They could either be charging now or in the future
+
+    When an override is applied, we don't care about the schedule until the override has finished
+
+    We assume that an override will always apply 10% of capacity within a 60 min slot
+
+    Scenario 1
+
+    No charge slot active + override applied
+        Expected result: 60 mins worth of charge applied to projected_battery soc
+
+
+    Scenario 2
+
+    1 hr Charge slot active + override applied over same time period
+
+        Expected result: 60 mins worth of charge applied to the project_battery soc
+
+
+    Scenario 3
+
+    1 hr charge slot active
+    Override applied for 1 hour
+    Override removed 30 mins in
+
+        Expected result: 90 mins worth of charge applied to the projected_battery soc from start of time
+
+    """
+
+    car.battery_level = battery_starting_level
+    car.save()
+
+    ChargingSlot.objects.create(charging_schedule=charging_schedule,
+                                start_datetime=datetime.strptime(schedule_start, '%H:%M - %d/%m/%Y'),
+                                end_datetime=datetime.strptime(schedule_end, '%H:%M - %d/%m/%Y'),
+                                battery_level_gained=Decimal('0.1')
+                                )
+
+    url = reverse('charging_schedule', kwargs={'car_ae_id': car.ae_id})
+    response = api_client.post(url)
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data['projected_battery_soc'] == expected_charge_level
 
 
 def test_user_can_pause_schedule_and_see_new_battery_soc(api_client, car, charging_schedule, charging_slots):
-    url = reverse('charging_schedule', kwargs={'ae_id': car.ae_id})
+    url = reverse('charging_schedule', kwargs={'car_ae_id': car.ae_id})
     response = api_client.get(url)
 
 
 def test_user_sees_unchanged_battery_soc_when_car_not_at_home(api_client, car, charging_schedule, charging_slots):
-    url = reverse('charging_schedule', kwargs={'ae_id': car.ae_id})
+    url = reverse('charging_schedule', kwargs={'car_ae_id': car.ae_id})
     response = api_client.get(url)

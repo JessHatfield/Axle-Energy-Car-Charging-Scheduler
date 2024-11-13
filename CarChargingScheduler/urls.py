@@ -24,10 +24,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('car/<uuid:car_ae_id>', CarView.as_view(), name='car'),
     path('car/<uuid:car_ae_id>/charging_schedule/', ChargingScheduleView.as_view(), name='charging_schedule'),
-    # path('car/<uuid:ae_id>/charging_schedule/<uuid:charging_schedule_ae_id>/charging_slots/', ChargingSlotView.as_view(), name='charging_slots'),
-    # path('car/<uuid:ae_id>/charging_schedule/override', ChargingScheduleView.as_view(), name='override_charging_schedule'),
-    # path('car/<uuid:ae_id>/charging_schedule/pause', PauseChargingScheduleView.as_view(), name='pause_charging_schedule'),
-    # path('car/<uuid:ae_id>/charging_schedule/<uuid:charging_schedule_ae_id>/charging_slots', OverrideChargingScheduleView.as_view(),
-    #      name='charging_schedule')
+    path('car/<uuid:ae_id>/charging_schedule/<uuid:charging_schedule_ae_id>/charging_slots/', ChargingSlotView.as_view(), name='charging_slots'),
+    path('car/<uuid:ae_id>/charging_schedule/override', ChargingScheduleView.as_view(), name='override_charging_schedule'),
+    path('car/<uuid:ae_id>/charging_schedule/pause', PauseChargingScheduleView.as_view(), name='pause_charging_schedule'),
+    path('car/<uuid:ae_id>/charging_schedule/<uuid:charging_schedule_ae_id>/charging_slots', OverrideChargingScheduleView.as_view(),
+         name='charging_schedule')
 
 ]
