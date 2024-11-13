@@ -36,7 +36,10 @@ class OverrideChargingScheduleView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+
+        # Work out how to apply the override here
+
+        return self.update(request, *args, **kwargs)
 
 
 class ChargingSlotView(generics.ListAPIView):

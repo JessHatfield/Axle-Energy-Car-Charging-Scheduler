@@ -81,9 +81,6 @@ class ChargingSlot(AeModel):
     end_datetime = models.DateTimeField(auto_now=False, verbose_name='charge_slot_ends_at',
                                         help_text='When this charge slot ends')
 
-    is_override_applied = models.BooleanField(default=False, verbose_name='charging_schedule_override_live',
-                                              help_text='Has a charging override been set')
-
     battery_level_gained = models.DecimalField(decimal_places=2, max_digits=3, default=0.5,
                                                verbose_name='battery_level_gained',
                                                help_text='the percentage point increase in battery level gained via this '
