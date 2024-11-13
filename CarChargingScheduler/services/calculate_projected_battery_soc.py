@@ -30,11 +30,12 @@ def calculate_override_component(charging_slots: QuerySet, override_applied_at: 
             override_end = override_end.timestamp()
             slot_end = slot.end_datetime.timestamp()
 
-            mins_of_extra_charging = (override_end - slot_end) * 60
+            mins_of_extra_charging = (override_end - slot_end) / 60
 
-            extra_capacity = (BATTERY_OVERRIDE_CHARGE_GAINED / BATTERY_OVERRIDE_DURATION_MINS) * mins_of_extra_charging
+            charge_time_to_capacity_ratio = BATTERY_OVERRIDE_CHARGE_GAINED / BATTERY_OVERRIDE_DURATION_MINS
+            extra_capacity = charge_time_to_capacity_ratio * mins_of_extra_charging
 
-            return extra_capacity
+            return round(extra_capacity,3)
 
     # If we don't find any overlapping slots then we can return the full charge amount
 
