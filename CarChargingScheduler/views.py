@@ -41,7 +41,12 @@ class OverrideChargingScheduleView(generics.UpdateAPIView):
 
     def post(self, request, *args, **kwargs):
         charging_schedule = self.get_object()
-        charging_schedule.override_applied_at = timezone.now()
+
+        # Toggle the override with each call
+        if charging_schedule.override_applied_at:
+            charging_schedule.override_applied_at = None
+        else:
+            charging_schedule.override_applied_at = timezone.now()
         charging_schedule.save()
 
         return self.update(request, *args, **kwargs)
