@@ -1,11 +1,12 @@
 from datetime import timezone
 
+from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 
 from CarChargingScheduler.mixins import AeModel
 
 
-class User(AeModel):
+class User(AeModel,AbstractBaseUser):
     username = models.CharField(
         blank=True,
         max_length=50,
