@@ -33,6 +33,9 @@ class ChargingSchedule(AeModel):
     paused_until = models.DateTimeField(null=True, verbose_name='charging_schedule_paused_until',
                                         help_text='When this schedule is paused until')
 
+    override_applied_at = models.DateTimeField(null=True, verbose_name='override_applied_at',
+                                               help_text='When the charge now button was pressed')
+
     car = models.ForeignKey(to=Car, verbose_name='Car', help_text='Car linked to Charging Schedule',
                             on_delete=models.CASCADE)
 

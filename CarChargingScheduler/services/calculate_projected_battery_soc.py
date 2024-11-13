@@ -27,7 +27,7 @@ def calculate_override_component(charging_slots: QuerySet, override_applied_at: 
         if slot.end_datetime >= override_applied_at >= slot.start_datetime:
             override_end = override_applied_at + datetime.timedelta(hours=1)
 
-            override_end = datetime.timestamp()
+            override_end = override_end.timestamp()
             slot_end = slot.end_datetime.timestamp()
 
             mins_of_extra_charging = (override_end - slot_end) * 60
