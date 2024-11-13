@@ -12,6 +12,7 @@ class AeModel(models.Model):
     """
 
     ae_id = models.UUIDField(
+        primary_key=True,
         editable=False,
         default=uuid.uuid4,
         unique=True,

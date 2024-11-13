@@ -6,7 +6,7 @@ from django.db import models
 from CarChargingScheduler.mixins import AeModel
 
 
-class User(AeModel,AbstractBaseUser):
+class User(AeModel, AbstractBaseUser):
     username = models.CharField(
         blank=True,
         max_length=50,
@@ -19,7 +19,8 @@ class Car(AeModel):
     user = models.ForeignKey(to=User, verbose_name='User', help_text='User this car belongs to',
                              on_delete=models.PROTECT)
 
-    battery_level = models.DecimalField(decimal_places=2,max_digits=3, default=0.5, verbose_name='battery_level_percantage',
+    battery_level = models.DecimalField(decimal_places=2, max_digits=3, default=0.5,
+                                        verbose_name='battery_level_percantage',
                                         help_text='the % capacity remaining in the battery expressed')
 
     is_at_home = models.BooleanField(default=True, verbose_name='car_is_at_home',
@@ -30,7 +31,8 @@ class ChargingSchedule(AeModel):
     paused_until = models.DateTimeField(null=True, verbose_name='charging_schedule_paused_until',
                                         help_text='When this schedule is paused until')
 
-    car = models.ForeignKey(to=Car, verbose_name='Car', help_text='Car linked to Charging Schedule',on_delete=models.CASCADE)
+    car = models.ForeignKey(to=Car, verbose_name='Car', help_text='Car linked to Charging Schedule',
+                            on_delete=models.CASCADE)
 
     def scheduled_paused(self) -> bool:
         if self.paused_until <= timezone.now():
@@ -38,7 +40,7 @@ class ChargingSchedule(AeModel):
 
         return True
 
-    def battery_soc_post_schedule(self):
+    def projected_battery_soc(self):
         if self.scheduled_paused:
             return self.car.battery_level
 
@@ -67,3 +69,8 @@ class ChargingSlot(AeModel):
 
     is_override_applied = models.BooleanField(default=False, verbose_name='charging_schedule_override_live',
                                               help_text='Has a charging override been set')
+
+    battery_level_gained = models.DecimalField(decimal_places=2, max_digits=3, default=0.5,
+                                               verbose_name='battery_level_gained',
+                                               help_text='the percentage point increase in battery level gained via this '
+                                                         'charging slot')

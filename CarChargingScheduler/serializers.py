@@ -6,7 +6,7 @@ from CarChargingScheduler.models import Car, ChargingSlot, ChargingSchedule
 class CarSerializer(serializers.ModelSerializer):
     class Meta:
         model = Car
-        fields = ['is_at_home','battery_level']
+        fields = ['is_at_home', 'battery_level']
 
 
 class ChargingSlotSerializer(serializers.ModelSerializer):
@@ -18,6 +18,7 @@ class ChargingSlotSerializer(serializers.ModelSerializer):
 class ChargingScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChargingSchedule
-        fields = ['paused_until']
+        fields = ['paused_until', 'projected_battery_soc']
 
-
+    def get_projected_battery_soc(self, obj):
+        return obj.projected_battery_soc

@@ -3,15 +3,22 @@ from rest_framework.permissions import IsAuthenticated
 from CarChargingScheduler.authentication import PreSharedKeyAuthentication
 
 from CarChargingScheduler.models import ChargingSlot, ChargingSchedule, Car
+from CarChargingScheduler.serializers import ChargingScheduleSerializer
 
 
 class ChargingScheduleView(generics.RetrieveAPIView):
     queryset = ChargingSchedule.objects.all()
+    serializer_class = ChargingScheduleSerializer
     permission_classes = [PreSharedKeyAuthentication]
     permission_classes = [IsAuthenticated]
 
+    def get_object(self):
+        car_ae_id = self.kwargs['car_ae_id']
+        return ChargingSchedule.objects.get(car=car_ae_id)
+
     def get(self, request, *args, **kwargs):
-        pass
+        data = self.retrieve(request, *args, **kwargs)
+        return data
 
 
 class PauseChargingScheduleView(generics.UpdateAPIView):
@@ -19,8 +26,8 @@ class PauseChargingScheduleView(generics.UpdateAPIView):
     authentication_classes = [PreSharedKeyAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def post(self):
-        pass
+    def post(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
 
 
 class OverrideChargingScheduleView(generics.UpdateAPIView):
@@ -28,8 +35,8 @@ class OverrideChargingScheduleView(generics.UpdateAPIView):
     authentication_classes = [PreSharedKeyAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def post(self):
-        pass
+    def post(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
 
 
 class ChargingSlotView(generics.ListAPIView):
@@ -38,7 +45,7 @@ class ChargingSlotView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        pass
+        return self.retrieve(request, *args, **kwargs)
 
 
 class CarView(generics.RetrieveAPIView):
@@ -46,5 +53,5 @@ class CarView(generics.RetrieveAPIView):
     authentication_classes = [PreSharedKeyAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def put(self):
-        pass
+    def put(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
