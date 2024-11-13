@@ -1,12 +1,13 @@
-from rest_framework import generics, permissions
+from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from CarChargingScheduler.authentication import PreSharedKeyAuthentication
 
 from CarChargingScheduler.models import ChargingSlot, ChargingSchedule, Car
 
 
 class ChargingScheduleView(generics.RetrieveAPIView):
     queryset = ChargingSchedule.objects.all()
-    permission_classes = [permissions.PreSharedKeyAuthentication]
+    permission_classes = [PreSharedKeyAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
@@ -15,7 +16,7 @@ class ChargingScheduleView(generics.RetrieveAPIView):
 
 class PauseChargingScheduleView(generics.UpdateAPIView):
     queryset = ChargingSchedule.objects.all()
-    authentication_classes = [permissions.PreSharedKeyAuthentication]
+    authentication_classes = [PreSharedKeyAuthentication]
     permission_classes = [IsAuthenticated]
 
     def post(self):
@@ -24,7 +25,7 @@ class PauseChargingScheduleView(generics.UpdateAPIView):
 
 class OverrideChargingScheduleView(generics.UpdateAPIView):
     queryset = ChargingSchedule.objects.all()
-    authentication_classes = [permissions.PreSharedKeyAuthentication]
+    authentication_classes = [PreSharedKeyAuthentication]
     permission_classes = [IsAuthenticated]
 
     def post(self):
@@ -33,7 +34,7 @@ class OverrideChargingScheduleView(generics.UpdateAPIView):
 
 class ChargingSlotView(generics.ListAPIView):
     queryset = ChargingSlot.objects.all()
-    authentication_classes = [permissions.PreSharedKeyAuthentication]
+    authentication_classes = [PreSharedKeyAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
@@ -42,7 +43,7 @@ class ChargingSlotView(generics.ListAPIView):
 
 class CarView(generics.RetrieveAPIView):
     queryset = Car.objects.all()
-    authentication_classes = [permissions.PreSharedKeyAuthentication]
+    authentication_classes = [PreSharedKeyAuthentication]
     permission_classes = [IsAuthenticated]
 
     def put(self):
