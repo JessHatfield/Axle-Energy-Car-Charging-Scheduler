@@ -25,9 +25,24 @@ class PauseChargingScheduleView(generics.UpdateAPIView):
     queryset = ChargingSchedule.objects.all()
     authentication_classes = [PreSharedKeyAuthentication]
     permission_classes = [IsAuthenticated]
+    serializer_class = ChargingScheduleSerializer
+
+    def get_object(self):
+        car_ae_id = self.kwargs['car_ae_id']
+        return ChargingSchedule.objects.get(car=car_ae_id)
 
     def post(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+
+        charging_schedule = self.get_object()
+
+        if charging_schedule.paused_until:
+            charging_schedule.paused_until = None
+        else:
+            charging_schedule.paused_until = timezone.now()
+
+        charging_schedule.save()
+
+        return self.update(request, *args, **kwargs)
 
 
 class OverrideChargingScheduleView(generics.UpdateAPIView):

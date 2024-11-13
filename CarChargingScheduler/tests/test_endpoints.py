@@ -48,11 +48,31 @@ def test_user_can_apply_charge_override_and_see_new_battery_soc(api_client, car,
         assert data['projected_battery_soc'] == expected_new_charge_level
 
 
-def test_user_can_pause_schedule_and_see_new_battery_soc(api_client, car, charging_schedule, charging_slots):
-    url = reverse('charging_schedule', kwargs={'car_ae_id': car.ae_id})
-    response = api_client.get(url)
+def test_user_can_pause_schedule_and_see_new_battery_soc(api_client, car, charging_schedule, charging_slot):
+    """
+    When a charging schedule is paused then no charging slots be utilized until the next day
+
+    two scenarios
+
+    all slots in same day - no extra capacity
+    some slots today some slots tomorrow - some extra capacity but not all of it
+
+    """
+
+    # Scheduled is paused so no extra charge is added
+
+    url = reverse('pause_charging_schedule', kwargs={'car_ae_id': car.ae_id})
+    response = api_client.post(url)
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data['projected_battery_soc'] == car.battery_level
+
+    # Schedule is unpaused so our extra charge capacity is added
+    response = api_client.post(url)
+    data = response.json()
+    assert data['projected_battery_soc'] == 0.6
 
 
-def test_user_sees_unchanged_battery_soc_when_car_not_at_home(api_client, car, charging_schedule, charging_slots):
+def test_user_sees_unchanged_battery_soc_when_car_not_at_home(api_client, car, charging_schedule, charging_slot):
     url = reverse('charging_schedule', kwargs={'car_ae_id': car.ae_id})
     response = api_client.get(url)
