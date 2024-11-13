@@ -1,11 +1,10 @@
-from django.db.models import Sum
 from django.utils import timezone
-from decimal import Decimal
 
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 
 from CarChargingScheduler.mixins import AeModel
+from CarChargingScheduler.services.calculate_projected_battery_soc import calculate_projected_battery_soc
 
 
 class User(AeModel, AbstractBaseUser):
@@ -52,18 +51,7 @@ class ChargingSchedule(AeModel):
 
     @property
     def projected_battery_soc(self):
-        if self.scheduled_paused:
-            return self.car.battery_level
-
-        if not self.car.is_at_home:
-            return self.car.battery_level
-
-        # calculate charging slots
-        extra_capacity = Decimal('0.00')
-        for slot in self.charging_slots.all():
-            extra_capacity += slot.battery_level_gained
-
-        return self.car.battery_level + extra_capacity
+        return calculate_projected_battery_soc(charging_schedule=self)
 
 
 class ChargingSlot(AeModel):
