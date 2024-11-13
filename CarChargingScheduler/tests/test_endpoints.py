@@ -63,15 +63,6 @@ def test_user_can_apply_charge_override_and_see_new_battery_soc(api_client, car,
 
         Expected result: 60 mins worth of charge applied to the project_battery soc
 
-
-    Scenario 3
-
-    1 hr charge slot active
-    Override applied for 1 hour
-    Override removed 30 mins in
-
-        Expected result: 90 mins worth of charge applied to the projected_battery soc from start of time
-
     """
 
     car.battery_level = battery_starting_level
