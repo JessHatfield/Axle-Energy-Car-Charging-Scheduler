@@ -36,7 +36,9 @@ def test_calculate_override_component(car, charging_schedule, slot_start, slot_e
 @pytest.mark.parametrize('slot_start,slot_end,current_time,expected_charge_increase', [
     ('01:00:00 - 01/01/2024 +0000', '02:00:00 - 01/01/2024 +0000', '2024-01-01 01:00:00', Decimal('0.1')),
     ('01:00:00 - 01/01/2024 +0000', '02:00:00 - 01/01/2024 +0000', '2024-01-01 01:30:00', Decimal('0.05')),
-    ('01:00:00 - 01/01/2024 +0000', '02:00:00 - 01/01/2024 +0000', '2024-01-01 01:13:00', Decimal('0.022'))
+    ('01:00:00 - 01/01/2024 +0000', '02:00:00 - 01/01/2024 +0000', '2024-01-01 01:13:00', Decimal('0.0783')),
+    ('01:00:00 - 01/01/2024 +0000', '02:00:00 - 01/01/2024 +0000', '2024-01-01 01:59:55', Decimal('0.0001'))
+
 ])
 def test_calculate_partially_completed_slots(car, charging_schedule, slot_start, slot_end, current_time,
                                              expected_charge_increase):

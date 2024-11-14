@@ -1,6 +1,7 @@
 import datetime
 from decimal import Decimal
 
+from django.conf import settings
 from django.db.models import QuerySet
 from django.utils import timezone
 
@@ -35,7 +36,7 @@ def calculate_override_component(charging_slots: QuerySet, override_applied_at: 
             mins_of_extra_charging = (override_end - slot_end) / 60
             extra_capacity = CHARGE_TIME_TO_CAPACITY_RATIO * mins_of_extra_charging
 
-            return Decimal(f'{round(extra_capacity, 3)}')
+            return Decimal(f'{round(extra_capacity, settings.DECIMAL_POINT_PRECISION)}')
 
     # If we don't find any overlapping slots then we can return the full charge amount
 
@@ -59,7 +60,7 @@ def calculate_projected_battery_gain(charging_schedule) -> Decimal:
         # If timeslot is partially complete calculate partial capacity
         if slot.end_datetime >= current_time >= slot.start_datetime:
             mins_remaining = (slot.end_datetime.timestamp() - current_time.timestamp()) / 60
-            extra_capacity = Decimal(f'{CHARGE_TIME_TO_CAPACITY_RATIO * mins_remaining}')
+            extra_capacity = Decimal(f'{round(CHARGE_TIME_TO_CAPACITY_RATIO * mins_remaining,settings.DECIMAL_POINT_PRECISION)}')
 
         else:
             extra_capacity += slot.battery_level_gained
