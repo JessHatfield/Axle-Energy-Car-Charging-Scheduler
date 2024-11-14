@@ -41,6 +41,15 @@ I focused primarily on:
 
 ### Starting docker and running our tests
 
+Clone the repo
+
+```shell
+git clone https://github.com/JessHatfield/Axle-Energy-Car-Charging-Scheduler.git
+cd Axle-Energy-Car-Charging-Scheduler
+```
+
+Run docker and run tests
+
 ```shell
 sudo sudo docker build -t car_charging_scheduler:latest .
 sudo docker run -p 8000:8000 --name car_charging_scheduler -t car_charging_scheduler:latest
