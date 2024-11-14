@@ -23,6 +23,17 @@ pytestmark = pytest.mark.django_db
 def test_calculate_override_component(car, charging_schedule, slot_start, slot_end, override_applied_at,
                                       expected_battery_gain_from_override):
 
+    """
+    An override represents a fixed slot in time where a car is charging.
+
+    This is hardcoded currently to 1 hr for 0.1 battery capacity
+
+    If the override does not overlap with an existing charge slot then we gain the full 0.1 of extra capacity
+
+    If the override partially overlaps then we only get a fraction of extra capacity to avoid double counting!
+
+    """
+
 
     ChargingSlot.objects.create(charging_schedule=charging_schedule,
                                 start_datetime=datetime.strptime(slot_start, "%H:%M:%S - %d/%m/%Y %z"),

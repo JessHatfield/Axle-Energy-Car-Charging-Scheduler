@@ -53,7 +53,7 @@ class OverrideChargingScheduleView(generics.UpdateAPIView):
         # Toggle the override with each call
         if charging_schedule.override_applied_at:
             charging_schedule.override_applied_at = None
-        else:
+        elif charging_schedule.car.is_at_home and charging_schedule.override_applied_at is None:
             charging_schedule.override_applied_at = timezone.now()
         charging_schedule.save()
 

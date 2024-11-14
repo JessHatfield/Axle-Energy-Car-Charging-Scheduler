@@ -168,6 +168,23 @@ def test_charge_scheduled_only_applied_when_car_is_at_home(api_client, car, char
     assert data['is_schedule_paused'] == False
 
 
+def test_override_cannot_be_applied_when_the_car_is_not_at_home(api_client, car, charging_schedule, charging_slot):
+    assert charging_schedule.override_applied_at is None
+
+    # Mark car as not at home
+    url = reverse('car', kwargs={'car_ae_id': car.ae_id})
+    api_client.put(url, data={'is_at_home': False})
+
+    # Try to apply the override
+    url = reverse('override_charging_schedule', kwargs={'car_ae_id': car.ae_id})
+    response = api_client.post(url)
+    data = response.json()
+
+    #Check no override is applied
+    assert data['is_override_applied'] is False
+    assert data['projected_battery_soc'] == 0.5
+
+
 def test_user_can_retrieve_cars(api_client, car):
     url = reverse('cars')
     response = api_client.get(url)
