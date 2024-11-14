@@ -23,7 +23,7 @@ docker exec car_charging_scheduler pytest /app/CarChargingScheduler/tests
 ```shell
 curl -i -L  http://0.0.0.0:8000/car
 ```
-Returns this payload. The `ae_id` field is used in requests to access other relevant endpoints
+Returns this payload. The `ae_id` field is used in requests to access other relevant endpoints.
 
 ```json
 [
@@ -44,8 +44,8 @@ Returns this payload. The `ae_id` field is used in requests to access other rele
 ```shell
 curl -i -L  http://0.0.0.0:8000/car/9bdbad41-107d-4a4f-b43b-76b2852a4fa5/charging_schedule/
 ```
+Surfaces Our Charging Schedule including a projection of battery capacity once schedule is complete.
 
-Surfaces Our Charging Schedule including a projection of battery capacity once schedule is complete
 ```json
 {
   "paused_until": "2024-11-14T17:46:00.982257Z",
@@ -76,9 +76,9 @@ Surfaces Our Charging Schedule including a projection of battery capacity once s
 ```shell
 curl -X POST -i -L http://0.0.0.0:8000/car/9bdbad41-107d-4a4f-b43b-76b2852a4fa5/charging_schedule/override
 ```
-Applies a 1hr override to our schedule which increases our projected_battery_soc by 0.1
+Applies a 1hr override to our schedule which increases our projected_battery_soc by 0.1.
 
-If the override partially overlaps with an existing slot, we apply a fraction of the override
+If the override partially overlaps with an existing slot, we apply a fraction of the override.
 
 This behaviour is demonstrated within our test suite [here](https://github.com/JessHatfield/Axle-Energy-Car-Charging-Scheduler/blob/0221b64553f3a314b90d467db25b77df152bf7df/CarChargingScheduler/tests/services/test_battery_projection_calculator.py#L23).
 
@@ -88,7 +88,7 @@ This behaviour is demonstrated within our test suite [here](https://github.com/J
 curl -X POST -i -L http://0.0.0.0:8000/car/9bdbad41-107d-4a4f-b43b-76b2852a4fa5/charging_schedule/pause
 ```
 
-Pauses the charging schedule, preventing the added battery capacity from our charging slots from being applied to our projected_battery_soc
+Pauses the charging schedule, preventing the added battery capacity from our charging slots from being applied to our projected_battery_soc.
 
 The schedule will start to be applied again the following day.
 
@@ -108,11 +108,13 @@ curl -X PUT \
   http://0.0.0.0:8000/car/9bdbad41-107d-4a4f-b43b-76b2852a4f
 ```
 
-If a car is marked as being away from the home then the charging schedule is suspended. Battery capacity from our charging slots will not be applied to our projected_battery_soc
+If a car is marked as being away from the home then the charging schedule is suspended. Battery capacity from our charging slots will not be applied to our projected_battery_soc.
 
 This behaviour is demonstrated within our test suite [here](https://github.com/JessHatfield/Axle-Energy-Car-Charging-Scheduler/blob/67dd90e397a06ef9c307f65821e29f1ead623bad/CarChargingScheduler/tests/test_endpoints.py#L140).
 
+In addition, overrides cannot be set whilst the car is not at home.
 
+This behaviour is demonstrated within our test suite [here](https://github.com/JessHatfield/Axle-Energy-Car-Charging-Scheduler/blob/70cb7a5853c93a6479905829dae77fbb4f0dd791/CarChargingScheduler/tests/test_endpoints.py#L171-L185).
 
 
 
