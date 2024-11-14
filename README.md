@@ -39,20 +39,22 @@ I focused primarily on:
 
 ## How to run
 
-### Starting docker and running our tests
+### Starting Docker and Running Our Tests
 
-Clone the repo
+- Clone the repo
 
 ```shell
 git clone https://github.com/JessHatfield/Axle-Energy-Car-Charging-Scheduler.git
 cd Axle-Energy-Car-Charging-Scheduler
 ```
 
-Run docker and run tests
-
+- Run docker 
 ```shell
 sudo sudo docker build -t car_charging_scheduler:latest .
 sudo docker run -p 8000:8000 --name car_charging_scheduler -t car_charging_scheduler:latest
+```
+- Run our test suite via docker
+```shell
 docker exec car_charging_scheduler pytest /app/CarChargingScheduler/tests
 ```
 
@@ -110,7 +112,7 @@ Surfaces Our Charging Schedule including a projection of battery capacity once s
   "is_override_applied": false
 }
 ```
-#### Trigger charging immediately
+#### Trigger Charging Immediately
 
 ```shell
 curl -X POST -i -L http://0.0.0.0:8000/car/9bdbad41-107d-4a4f-b43b-76b2852a4fa5/charging_schedule/override
