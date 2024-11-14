@@ -18,7 +18,7 @@ def calculate_override_component(charging_slots: QuerySet, override_applied_at: 
 
     If the override is happening inside of a charge slot
 
-    calculate minuite overlap
+    calculate minute overlap
 
     Multiple 0.1 by the % of mins outside of the overlap
 
@@ -28,7 +28,6 @@ def calculate_override_component(charging_slots: QuerySet, override_applied_at: 
 
         override_start = override_applied_at
         override_end = override_applied_at + datetime.timedelta(minutes=BATTERY_OVERRIDE_DURATION_MINS)
-        # If overrider_start betwee
 
         # If override starts within a given slot
         if slot.end_datetime >= override_start >= slot.start_datetime:

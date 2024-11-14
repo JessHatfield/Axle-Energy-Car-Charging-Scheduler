@@ -3,8 +3,38 @@
 
 ## My Solution
 
+I've written a backend using Django Rest Framework then provided acceptance tests here demonstrating each of the behaviours in the acceptance criteria pdf
 
-The tests within /tests/test_endpoints.py cover each of the acceptances criteria listed in your brief pdf
+I've been working DRF for the past couple of years at Qogita, so it seemed like a decent choice of tool for this exercise!
+
+Its worth nothing that didn't have access to the latest version of the exercise (containing a pre-built streamlight application ) whilst I was writing this.
+
+At the time build a REST API seemed like a reasonable course of action
+
+Endpoint tests demonstrating each required behavior in the acceptance criteria can be found [here](https://github.com/JessHatfield/Axle-Energy-Car-Charging-Scheduler/blob/70cb7a5853c93a6479905829dae77fbb4f0dd791/CarChargingScheduler/tests/test_endpoints.py)
+
+
+I made a couple of assumptions when it came to modelling:
+
+- A user could have multiple cars but would only want to set a single charging schedule per car
+- Charging schedules can spread across multiple days and need to be composed by discrete time ranges which cannot overlap
+- The creation of Charging schedules/Charging Slots/Cars/Users would be something we would implement later
+- The end user would always need to see the charging_schedule even if the schedule was currently paused or a car was not at home
+- We need to support users across multiple different timezones
+
+This is an example app made for the purposes of a code review. I've not tried to get it production ready:
+
+- No authentication or env variable management was implemented
+- We are not using a database which allows for simultaneous access
+- I've not created a scalable project structure to allow for expansion across domains cleanly
+- We have no logging or error tracking setup
+
+I focused primarily on: 
+
+- Coming up with domain model + set of relationships that meshed with our requirements and made sense to me
+- Writing behavioural tests first and then writing our implementation to pass these tests
+- Keeping the majority of our business logic separate from Model/View/Controller code via the services pattern
+- Ensuring that we've supported a wide range of edge cases via regression testing, and that these extra cases did not pollute our endpoint test file 
 
 
 ## How to run
