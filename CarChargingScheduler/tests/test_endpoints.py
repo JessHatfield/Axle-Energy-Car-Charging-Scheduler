@@ -27,10 +27,8 @@ common scenarios
 """
 
 
-# Things we need to test
-
 @freeze_time('2024-01-01 01:00:00')
-def test_user_can_retrieve_state_of_charge(api_client, car, charging_schedule):
+def test_user_can_retrieve_state_of_charge_and_charge_schedule(api_client, car, charging_schedule):
     ChargingSlot.objects.create(charging_schedule=charging_schedule,
                                 battery_level_gained=Decimal("0.1"),
                                 start_datetime=datetime.strptime('01:00 - 01/01/2024',
@@ -44,6 +42,8 @@ def test_user_can_retrieve_state_of_charge(api_client, car, charging_schedule):
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
     assert data['projected_battery_soc'] == 0.6
+
+    assert data['charge_schedule'] == ''
 
 
 @freeze_time('2024-01-01 01:00:00')
@@ -65,6 +65,10 @@ def test_user_can_apply_charge_override_and_see_new_battery_soc(api_client, car,
         assert data['projected_battery_soc'] == expected_new_charge_level
 
 
+def test_user_override_stops_and_schedule_resumes_if_charging_stopped():
+    pass
+
+
 @freeze_time('2024-01-01 01:00:00')
 def test_user_can_pause_schedule_and_see_new_battery_soc(api_client, car, charging_schedule, charging_slot):
     """
@@ -83,11 +87,13 @@ def test_user_can_pause_schedule_and_see_new_battery_soc(api_client, car, chargi
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
     assert data['projected_battery_soc'] == car.battery_level
+    assert data['is_schedule_paused'] == True
 
     # Schedule is unpaused so our extra charge capacity is added
     response = api_client.post(url)
     data = response.json()
     assert data['projected_battery_soc'] == 0.6
+    assert data['is_schedule_paused'] == False
 
 
 def test_paused_schedule_reactivates_the_following_day(api_client, car, charging_schedule,
@@ -111,9 +117,8 @@ def test_paused_schedule_reactivates_the_following_day(api_client, car, charging
 
 
 @freeze_time('2024-01-01 01:00:00')
-def test_user_sees_unchanged_battery_soc_when_car_not_at_home(api_client, car, charging_schedule, charging_slot):
+def test_charge_scheduled_only_applied_when_car_is_at_home(api_client, car, charging_schedule, charging_slot):
     # Mark car as not at home
-
     url = reverse('car', kwargs={'car_ae_id': car.ae_id})
     response = api_client.put(url, data={'is_at_home': False})
 
@@ -125,17 +130,19 @@ def test_user_sees_unchanged_battery_soc_when_car_not_at_home(api_client, car, c
     url = reverse('charging_schedule', kwargs={'car_ae_id': car.ae_id})
     response = api_client.get(url)
 
+    # Charge schedule has not been applied
     data = response.json()
     assert data['projected_battery_soc'] == 0.5
+    assert data['is_schedule_paused'] == True
 
     # Mark car at home
-
     url = reverse('car', kwargs={'car_ae_id': car.ae_id})
-    response = api_client.put(url, data={'is_at_home': True})
+    api_client.put(url, data={'is_at_home': True})
 
-    # Retrieve Latest Charging Schedule. Battery SOC projection should now include our charge slot!
+    #The charge schedule has now been applied
     url = reverse('charging_schedule', kwargs={'car_ae_id': car.ae_id})
     response = api_client.get(url)
 
     data = response.json()
     assert data['projected_battery_soc'] == 0.6
+    assert data['is_schedule_paused'] == False
