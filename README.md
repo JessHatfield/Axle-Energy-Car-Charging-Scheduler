@@ -3,13 +3,13 @@
 
 ## My Solution
 
-I've written a backend using Django Rest Framework then provided acceptance tests here demonstrating each of the behaviours in the acceptance criteria pdf
+I've written a backend using Django Rest Framework then provided acceptance tests here demonstrating each of the behaviours in the acceptance criteria pdf.
 
 I've been working DRF for the past couple of years at Qogita, so it seemed like a decent choice of tool for this exercise!
 
 Its worth nothing that didn't have access to the latest version of the exercise (containing a pre-built streamlight application ) whilst I was writing this.
 
-At the time build a REST API seemed like a reasonable course of action
+So building a REST API seemed like a reasonable course of action at the time.
 
 Endpoint tests demonstrating each required behavior in the acceptance criteria can be found [here](https://github.com/JessHatfield/Axle-Energy-Car-Charging-Scheduler/blob/70cb7a5853c93a6479905829dae77fbb4f0dd791/CarChargingScheduler/tests/test_endpoints.py)
 
