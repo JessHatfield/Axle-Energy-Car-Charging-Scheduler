@@ -19,7 +19,6 @@ def car(user):
 @pytest.fixture()
 def api_client(user):
     client = APIClient()
-    client.force_authenticate(user=user)
     return client
 
 

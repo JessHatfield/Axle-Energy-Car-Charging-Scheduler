@@ -1,7 +1,6 @@
 from django.utils import timezone
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from CarChargingScheduler.authentication import PreSharedKeyAuthentication
 
 from CarChargingScheduler.models import ChargingSlot, ChargingSchedule, Car
 from CarChargingScheduler.serializers import ChargingScheduleSerializer, ChargingSlotSerializer, CarSerializer
@@ -9,8 +8,6 @@ from CarChargingScheduler.serializers import ChargingScheduleSerializer, Chargin
 
 class ChargingScheduleView(generics.RetrieveAPIView):
     serializer_class = ChargingScheduleSerializer
-    permission_classes = [PreSharedKeyAuthentication]
-    permission_classes = [IsAuthenticated]
 
     def get_object(self):
         car_ae_id = self.kwargs['car_ae_id']
@@ -23,8 +20,6 @@ class ChargingScheduleView(generics.RetrieveAPIView):
 
 class PauseChargingScheduleView(generics.UpdateAPIView):
     queryset = ChargingSchedule.objects.all()
-    authentication_classes = [PreSharedKeyAuthentication]
-    permission_classes = [IsAuthenticated]
     serializer_class = ChargingScheduleSerializer
 
     def get_object(self):
@@ -46,8 +41,6 @@ class PauseChargingScheduleView(generics.UpdateAPIView):
 
 
 class OverrideChargingScheduleView(generics.UpdateAPIView):
-    authentication_classes = [PreSharedKeyAuthentication]
-    permission_classes = [IsAuthenticated]
     serializer_class = ChargingScheduleSerializer
 
     def get_object(self):
@@ -69,8 +62,6 @@ class OverrideChargingScheduleView(generics.UpdateAPIView):
 
 class ChargingSlotView(generics.ListAPIView):
     queryset = ChargingSlot.objects.all()
-    authentication_classes = [PreSharedKeyAuthentication]
-    permission_classes = [IsAuthenticated]
     serializer_class = ChargingSlotSerializer
 
     def get(self, request, *args, **kwargs):
@@ -78,13 +69,10 @@ class ChargingSlotView(generics.ListAPIView):
 
 class CarsView(generics.ListAPIView):
     queryset = Car.objects.all()
-    permission_classes = [IsAuthenticated]
     serializer_class = CarSerializer
 
 
 class CarView(generics.UpdateAPIView):
-    authentication_classes = [PreSharedKeyAuthentication]
-    permission_classes = [IsAuthenticated]
     serializer_class = CarSerializer
 
     def get_object(self):

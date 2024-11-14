@@ -15,13 +15,15 @@ pytestmark = pytest.mark.django_db
     ('05:00:00 - 02/01/2024 +0000', '06:00:00 - 02/01/2024 +0000', '07:00:00 - 02/01/2024 +0000', Decimal('0.1')),
     # No overlap
     ('05:00:00 - 02/01/2024 +0000', '06:00:00 - 02/01/2024 +0000', '05:45:00 - 02/01/2024 +0000', Decimal('0.075')),
-    # Overlap of 15 mins with end of slot
+    # Overlap of 15 mins with end of slot so we only get 75% of our override capacity applied
     ('05:00:00 - 02/01/2024 +0000', '06:00:00 - 02/01/2024 +0000', '04:15:00 - 02/01/2024 +0000', Decimal('0.075'))
-    # Overlap of 15 mins with start of slot
+    # Overlap of 15 mins with start of slot so we only get 75% of our override capacity applied
 
 ])
 def test_calculate_override_component(car, charging_schedule, slot_start, slot_end, override_applied_at,
                                       expected_battery_gain_from_override):
+
+
     ChargingSlot.objects.create(charging_schedule=charging_schedule,
                                 start_datetime=datetime.strptime(slot_start, "%H:%M:%S - %d/%m/%Y %z"),
                                 end_datetime=datetime.strptime(slot_end, "%H:%M:%S - %d/%m/%Y %z"),
