@@ -3,6 +3,7 @@ from decimal import Decimal
 from unittest import mock
 
 import pytest
+from django.conf import settings
 from django.urls import reverse
 from rest_framework import status
 from freezegun import freeze_time
@@ -43,7 +44,8 @@ def test_user_can_retrieve_state_of_charge_and_charge_schedule(api_client, car, 
     data = response.json()
     assert data['projected_battery_soc'] == 0.6
 
-    assert data['charge_schedule'] == ''
+    assert data['charging_slots'] == [{'battery_level_gained': '0.10', 'end_datetime': '2024-01-01T02:00:00Z',
+                                       'start_datetime': '2024-01-01T01:00:00Z'}]
 
 
 @freeze_time('2024-01-01 01:00:00')
@@ -65,8 +67,28 @@ def test_user_can_apply_charge_override_and_see_new_battery_soc(api_client, car,
         assert data['projected_battery_soc'] == expected_new_charge_level
 
 
-def test_user_override_stops_and_schedule_resumes_if_charging_stopped():
-    pass
+def test_user_override_stops_and_schedule_resumes_if_charging_stopped(api_client, car, charging_schedule):
+    # Apply an override
+    with mock.patch('CarChargingScheduler.services.battery_projection_calculator.calculate_override_component',
+                    return_value=Decimal(0.1)):
+        # Override applied so we get extra battery capacity
+        url = reverse('override_charging_schedule', kwargs={'car_ae_id': car.ae_id})
+        response = api_client.post(url)
+        data = response.json()
+        assert data['projected_battery_soc'] == 0.6
+        assert data['is_override_applied'] is True
+
+        #charging schedule has override applied
+        charging_schedule.refresh_from_db()
+        assert charging_schedule.override_applied_at is not None
+
+        url = reverse('override_charging_schedule', kwargs={'car_ae_id': car.ae_id})
+        response = api_client.post(url)
+        data = response.json()
+        assert data['projected_battery_soc'] == 0.5
+        assert data['is_override_applied'] is False
+
+
 
 
 @freeze_time('2024-01-01 01:00:00')

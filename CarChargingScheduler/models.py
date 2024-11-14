@@ -41,6 +41,9 @@ class ChargingSchedule(AeModel):
 
     @property
     def scheduled_paused(self) -> bool:
+
+        if not self.car.is_at_home:
+            return True
         # If it's not set it's not paused
         if not self.paused_until:
             return False
@@ -54,7 +57,11 @@ class ChargingSchedule(AeModel):
 
     @property
     def projected_battery_soc(self):
-        return self.car.battery_level + calculate_projected_battery_gain(charging_schedule=self)
+
+        if self.scheduled_paused:
+            return self.car.battery_level
+        else:
+            return self.car.battery_level + calculate_projected_battery_gain(charging_schedule=self)
 
 
 class ChargingSlot(AeModel):

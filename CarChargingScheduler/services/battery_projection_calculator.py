@@ -56,12 +56,6 @@ def calculate_override_component(charging_slots: QuerySet, override_applied_at: 
 
 
 def calculate_projected_battery_gain(charging_schedule) -> Decimal:
-    if charging_schedule.scheduled_paused:
-        return Decimal('0.0')
-
-    if not charging_schedule.car.is_at_home:
-        return Decimal('0.0')
-
     # calculate charging slots
     extra_capacity = Decimal('0.00')
     current_time = timezone.now()
