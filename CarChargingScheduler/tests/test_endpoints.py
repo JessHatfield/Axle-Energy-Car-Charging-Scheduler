@@ -174,6 +174,6 @@ def test_user_can_retrieve_cars(api_client, car):
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
 
-    assert data[0]['is_at_home']==car.is_at_home
-    assert Decimal(f'{data[0]['battery_level']}')==car.battery_level
-    assert data[0]['ae_id']==str(car.ae_id)
+    assert data[0]['is_at_home'] == car.is_at_home
+    assert Decimal(f'{data[0]['battery_level']}') == car.battery_level
+    assert data[0]['ae_id'] == str(car.ae_id)

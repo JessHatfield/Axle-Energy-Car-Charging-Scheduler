@@ -8,6 +8,7 @@ COPY . /app/
 
 ENV ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
 ENV DEBUG=False
+ENV DJANGO_SETTINGS_MODULE=CarChargingScheduler.settings
 
 RUN python manage.py makemigrations
 RUN python manage.py migrate
