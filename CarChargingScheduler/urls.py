@@ -18,16 +18,21 @@ from django.contrib import admin
 from django.urls import path
 
 from CarChargingScheduler.views import ChargingSlotView, CarView, PauseChargingScheduleView, \
-    OverrideChargingScheduleView, ChargingScheduleView
+    OverrideChargingScheduleView, ChargingScheduleView, CarsView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('car/', CarsView.as_view(), name='cars'),
     path('car/<uuid:car_ae_id>', CarView.as_view(), name='car'),
     path('car/<uuid:car_ae_id>/charging_schedule/', ChargingScheduleView.as_view(), name='charging_schedule'),
-    path('car/<uuid:car_ae_id>/charging_schedule/<uuid:charging_schedule_ae_id>/charging_slots/', ChargingSlotView.as_view(), name='charging_slots'),
-    path('car/<uuid:car_ae_id>/charging_schedule/override', OverrideChargingScheduleView.as_view(), name='override_charging_schedule'),
-    path('car/<uuid:car_ae_id>/charging_schedule/pause', PauseChargingScheduleView.as_view(), name='pause_charging_schedule'),
-    path('car/<uuid:car_ae_id>/charging_schedule/<uuid:charging_schedule_ae_id>/charging_slots', OverrideChargingScheduleView.as_view(),
+    path('car/<uuid:car_ae_id>/charging_schedule/<uuid:charging_schedule_ae_id>/charging_slots/',
+         ChargingSlotView.as_view(), name='charging_slots'),
+    path('car/<uuid:car_ae_id>/charging_schedule/override', OverrideChargingScheduleView.as_view(),
+         name='override_charging_schedule'),
+    path('car/<uuid:car_ae_id>/charging_schedule/pause', PauseChargingScheduleView.as_view(),
+         name='pause_charging_schedule'),
+    path('car/<uuid:car_ae_id>/charging_schedule/<uuid:charging_schedule_ae_id>/charging_slots',
+         OverrideChargingScheduleView.as_view(),
          name='charging_schedule')
 
 ]

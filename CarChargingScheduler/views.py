@@ -76,9 +76,13 @@ class ChargingSlotView(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
+class CarsView(generics.ListAPIView):
+    queryset = Car.objects.all()
+    permission_classes = [IsAuthenticated]
+    serializer_class = CarSerializer
+
 
 class CarView(generics.UpdateAPIView):
-    queryset = Car.objects.all()
     authentication_classes = [PreSharedKeyAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = CarSerializer

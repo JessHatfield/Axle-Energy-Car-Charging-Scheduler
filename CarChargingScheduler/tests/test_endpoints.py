@@ -78,7 +78,7 @@ def test_user_override_stops_and_schedule_resumes_if_charging_stopped(api_client
         assert data['projected_battery_soc'] == 0.6
         assert data['is_override_applied'] is True
 
-        #charging schedule has override applied
+        # charging schedule has override applied
         charging_schedule.refresh_from_db()
         assert charging_schedule.override_applied_at is not None
 
@@ -87,8 +87,6 @@ def test_user_override_stops_and_schedule_resumes_if_charging_stopped(api_client
         data = response.json()
         assert data['projected_battery_soc'] == 0.5
         assert data['is_override_applied'] is False
-
-
 
 
 @freeze_time('2024-01-01 01:00:00')
@@ -168,3 +166,14 @@ def test_charge_scheduled_only_applied_when_car_is_at_home(api_client, car, char
     data = response.json()
     assert data['projected_battery_soc'] == 0.6
     assert data['is_schedule_paused'] == False
+
+
+def test_user_can_retrieve_cars(api_client, car):
+    url = reverse('cars')
+    response = api_client.get(url)
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+
+    assert data[0]['is_at_home']==car.is_at_home
+    assert Decimal(f'{data[0]['battery_level']}')==car.battery_level
+    assert data[0]['ae_id']==str(car.ae_id)

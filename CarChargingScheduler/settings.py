@@ -12,6 +12,12 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 
+import os
+
+
+# This would change depending on envrionment, If this was actually a prod app I'd be storing these values within secrets_manager/envkey and keep them environment specific
+ALLOWED_HOSTS = ['localhost','127.0.0.1','0.0.0.0']
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -19,14 +25,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# If this was actually a prod app I'd be storing this within secrets_manager or env/key
 SECRET_KEY = 'django-insecure-a24aed(z5&^qnjh&mah29763gnsxxu2rvco6c^t)6@6#20m%!y'
 
+# A total hack done so we've got some way of authenticating a user. Would replace this with 0Auth2 + access_tokens for web app users in prod
 PRE_SHARED_API_KEY = 'apple123'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+DEBUG = os.environ.get('DEBUG', False)
 
 # Application definition
 
