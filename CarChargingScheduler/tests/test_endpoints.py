@@ -5,15 +5,31 @@ from unittest import mock
 import pytest
 from django.urls import reverse
 from rest_framework import status
+from freezegun import freeze_time
 
 from CarChargingScheduler.models import ChargingSlot
 
 pytestmark = pytest.mark.django_db
 
+"""
+This file contains our acceptance tests
+
+I've tried to split tests between this file and our services test file. This way I can test a bunch of extra edge 
+cases without bloat
+
+As a general pattern I try to keep business logic in service functions, this allows for easier re-use/testing
+
+Edge cases relating to business logic (for example fractional slot calculations) stay in service function tests
+
+Endpoint tests are then more about confirming that models/views/serializers/service functions work together across 
+common scenarios
+
+"""
+
 
 # Things we need to test
 
-
+@freeze_time('2024-01-01 01:00:00')
 def test_user_can_retrieve_state_of_charge(api_client, car, charging_schedule):
     ChargingSlot.objects.create(charging_schedule=charging_schedule,
                                 battery_level_gained=Decimal("0.1"),
@@ -30,6 +46,7 @@ def test_user_can_retrieve_state_of_charge(api_client, car, charging_schedule):
     assert data['projected_battery_soc'] == 0.6
 
 
+@freeze_time('2024-01-01 01:00:00')
 @pytest.mark.parametrize('extra_charge_from_override,initial_battery_charge_level,expected_new_charge_level',
                          [(Decimal(0.1), Decimal(0.5), 0.7)])
 def test_user_can_apply_charge_override_and_see_new_battery_soc(api_client, car, charging_schedule, charging_slot,
@@ -48,6 +65,7 @@ def test_user_can_apply_charge_override_and_see_new_battery_soc(api_client, car,
         assert data['projected_battery_soc'] == expected_new_charge_level
 
 
+@freeze_time('2024-01-01 01:00:00')
 def test_user_can_pause_schedule_and_see_new_battery_soc(api_client, car, charging_schedule, charging_slot):
     """
     When a charging schedule is paused then no charging slots be utilized until the next day
@@ -60,7 +78,6 @@ def test_user_can_pause_schedule_and_see_new_battery_soc(api_client, car, chargi
     """
 
     # Scheduled is paused so no extra charge is added
-
     url = reverse('pause_charging_schedule', kwargs={'car_ae_id': car.ae_id})
     response = api_client.post(url)
     assert response.status_code == status.HTTP_200_OK
@@ -73,6 +90,27 @@ def test_user_can_pause_schedule_and_see_new_battery_soc(api_client, car, chargi
     assert data['projected_battery_soc'] == 0.6
 
 
+def test_paused_schedule_reactivates_the_following_day(api_client, car, charging_schedule,
+                                                       charging_slots_spread_across_days):
+    charging_slot_for_the_1st, charging_slot_for_the_2nd = charging_slots_spread_across_days
+
+    with freeze_time('2024-01-01 01:00:00'):
+        # Scheduled is paused so no extra charge is added
+        url = reverse('pause_charging_schedule', kwargs={'car_ae_id': car.ae_id})
+        response = api_client.post(url)
+        data = response.json()
+        assert data['projected_battery_soc'] == car.battery_level
+
+    # Tomorrow comes around, the schedule should now be active again and our second slot should be applied
+    with freeze_time('2024-01-02 01:00:00'):
+        url = reverse('charging_schedule', kwargs={'car_ae_id': car.ae_id})
+        response = api_client.get(url)
+        data = response.json()
+        assert Decimal(
+            f'{data['projected_battery_soc']}') == car.battery_level + charging_slot_for_the_2nd.battery_level_gained
+
+
+@freeze_time('2024-01-01 01:00:00')
 def test_user_sees_unchanged_battery_soc_when_car_not_at_home(api_client, car, charging_schedule, charging_slot):
     # Mark car as not at home
 

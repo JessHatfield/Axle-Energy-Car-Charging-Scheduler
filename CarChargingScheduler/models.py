@@ -5,7 +5,7 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 
 from CarChargingScheduler.mixins import AeModel
-from CarChargingScheduler.services.battery_projection_calculator import calculate_projected_battery_soc
+from CarChargingScheduler.services.battery_projection_calculator import calculate_projected_battery_gain
 
 
 class User(AeModel, AbstractBaseUser):
@@ -41,13 +41,12 @@ class ChargingSchedule(AeModel):
 
     @property
     def scheduled_paused(self) -> bool:
-
         # If it's not set it's not paused
         if not self.paused_until:
             return False
 
         # If paused_until is in the future it's paused
-        elif self.paused_until <= timezone.now():
+        elif self.paused_until >= timezone.now():
             return True
 
         # In all other cases it's not paused
@@ -55,7 +54,7 @@ class ChargingSchedule(AeModel):
 
     @property
     def projected_battery_soc(self):
-        return calculate_projected_battery_soc(charging_schedule=self)
+        return self.car.battery_level + calculate_projected_battery_gain(charging_schedule=self)
 
 
 class ChargingSlot(AeModel):

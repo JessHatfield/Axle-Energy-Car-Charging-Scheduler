@@ -50,3 +50,22 @@ def charging_slot_2(charging_schedule):
                                                                                  '%H:%M - %d/%m/%Y'))
 
     return charging_slot_2
+
+
+@pytest.fixture()
+def charging_slots_spread_across_days(charging_schedule):
+    charging_slot_1 = ChargingSlot.objects.create(charging_schedule=charging_schedule,
+                                                  battery_level_gained=Decimal("0.1"),
+                                                  start_datetime=datetime.strptime('01:00 - 01/01/2024',
+                                                                                   '%H:%M - %d/%m/%Y'),
+                                                  end_datetime=datetime.strptime('02:00 - 01/01/2024',
+                                                                                 '%H:%M - %d/%m/%Y'))
+
+    charging_slot_2 = ChargingSlot.objects.create(charging_schedule=charging_schedule,
+                                                  battery_level_gained=Decimal("0.1"),
+                                                  start_datetime=datetime.strptime('01:00 - 02/01/2024',
+                                                                                   '%H:%M - %d/%m/%Y'),
+                                                  end_datetime=datetime.strptime('02:00 - 02/01/2024',
+                                                                                 '%H:%M - %d/%m/%Y'))
+
+    return charging_slot_1,charging_slot_2
